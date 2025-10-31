@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
 
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -21,10 +20,13 @@ export async function POST(req: NextRequest) {
     }
 
     const bookingDate = new Date(date);
-    const slot = experience.slots.find(s => 
-      s.date.toISOString().split('T')[0] === bookingDate.toISOString().split('T')[0] && 
-      s.time === time
-    );
+    
+    // Fix: Compare dates properly by converting both to ISO string dates
+    const slot = experience.slots.find((s) => {
+      const slotDate = s.date.toISOString().split('T')[0];
+      const requestDate = bookingDate.toISOString().split('T')[0];
+      return slotDate === requestDate && s.time === time;
+    });
 
     if (!slot) {
       return NextResponse.json({ error: "Slot not found" }, { status: 404 });
@@ -36,7 +38,6 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    
     const result = await prisma.$transaction(async (tx) => {
       const booking = await tx.booking.create({
         data: {
