@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Experience {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  price       Int
+  image       String
+  location    String
+  duration    String
+  about       String
+  slots       Slot[]
+  bookings    Booking[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("experiences")
+}
+
+model Slot {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  date         DateTime
+  time         String
+  available    Int      @default(0)
+  soldOut      Boolean  @default(false)
+  experienceId String   @db.ObjectId
+  experience   Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  @@map("slots")
+}
+
+model Booking {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  experienceId String   @db.ObjectId
+  date         DateTime
+  time         String
+  quantity     Int
+  userInfo     UserInfo
+  totalAmount  Int
+  status       BookingStatus @default(CONFIRMED)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  @@map("bookings")
+}
+
+model PromoCode {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  code          String   @unique
+  discountType  DiscountType
+  discountValue Int
+  minAmount     Int?
+  maxDiscount   Int?
+  validUntil    DateTime
+  isActive      Boolean  @default(true)
+  usedCount     Int      @default(0)
+  maxUsage      Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("promoCodes")
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+type UserInfo {
+  name  String
+  email String
+}
