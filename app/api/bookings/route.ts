@@ -73,7 +73,7 @@
 // }
 
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prismadb";
+import {prisma} from "@/lib/prismadb";
 import { Prisma } from "@prisma/client";
 
 export async function POST(req: NextRequest) {

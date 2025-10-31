@@ -16,7 +16,7 @@
 // }
 
 
-import prisma from '@/lib/prismadb';
+import {prisma} from '@/lib/prismadb';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
