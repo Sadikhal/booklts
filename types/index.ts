@@ -64,7 +64,6 @@
 //   experience?: Experience;
 // }
 
-
 export interface Experience {
   id: string;
   title: string;
@@ -81,7 +80,7 @@ export interface Experience {
 
 export interface Slot {
   id: string;
-  date: Date; // Changed from string to Date
+  date: Date;
   time: string;
   available: number;
   soldOut: boolean;
@@ -116,7 +115,7 @@ export interface PromoValidation {
 export interface Booking {
   id: string;
   experienceId: string;
-  date: Date; // Changed from string to Date
+  date: Date;
   time: string;
   quantity: number;
   userInfo: {
@@ -125,7 +124,7 @@ export interface Booking {
   };
   totalAmount: number;
   status: 'CONFIRMED' | 'CANCELLED';
-  createdAt: Date; // Changed from string to Date
-  updatedAt: Date; // Changed from string to Date
+  createdAt: Date;
+  updatedAt: Date;
   experience?: Experience;
 }

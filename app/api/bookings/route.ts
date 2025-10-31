@@ -72,9 +72,9 @@
 //   }
 // }
 
-
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
+import { Prisma } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   try {
@@ -122,7 +122,8 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    const result = await prisma.$transaction(async (tx) => {
+    // Use Prisma.TransactionClient type for the tx parameter
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const booking = await tx.booking.create({
         data: {
           experienceId,
@@ -155,3 +156,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+
+// Updated interfaces to match Prisma schema
