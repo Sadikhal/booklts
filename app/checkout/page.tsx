@@ -384,17 +384,11 @@ const CheckoutPage = () => {
       setPromoError('Please enter a promo code')
       return
     }
-
     setIsApplyingPromo(true)
     setPromoError('')
-
     try {
       const response = await promoAPI.validate(promoCode, basePrice)
-      if (response.data.success) {
-        setAppliedPromo(response.data.data)
-      } else {
-        setPromoError(response.data.error || 'Invalid promo code')
-      }
+        setAppliedPromo(response.data)
     } catch (err: any) {
       setPromoError(err.response?.data?.error || 'Invalid promo code')
       setAppliedPromo(null)
