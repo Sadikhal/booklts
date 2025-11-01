@@ -2,8 +2,6 @@
 
 A modern, responsive experience booking platform built with Next.js, TypeScript, and Tailwind CSS. Users can browse, search, and book various experiences with real-time availability checking.
 
-![Project Screenshot](https://via.placeholder.com/800x400/3B82F6/FFFFFF?text=Experience+Booking+Platform)
-
 ## ✨ Features
 
 ### 🏠 Home & Navigation
@@ -64,8 +62,7 @@ A modern, responsive experience booking platform built with Next.js, TypeScript,
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/experience-booking-platform.git
-cd experience-booking-platform
+git clone https://github.com/Sadikhal/booklts.git
 ```
 
 2. **Install dependencies**
