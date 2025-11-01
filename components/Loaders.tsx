@@ -28,3 +28,20 @@ export function ExperienceLoader() {
     </Container>
   )
 }
+
+
+
+export function CheckoutLoader() {
+  return (
+    <Container className="flex flex-col h-full pt-[111px]">
+        <div className="animate-pulse bg-gray-200 h-6 w-32 mb-8"></div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-4">
+            <div className="animate-pulse bg-gray-200 h-12 rounded-md"></div>
+            <div className="animate-pulse bg-gray-200 h-12 rounded-md"></div>
+          </div>
+          <div className="animate-pulse bg-gray-200 h-64 rounded-xl"></div>
+        </div>
+      </Container>
+  )
+}

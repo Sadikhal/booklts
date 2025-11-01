@@ -87,7 +87,6 @@ const Home = () => {
             gap-8
             w-full
             h-full "
-
           >
             {displayExperiences.map((experience) => (
               <ExperienceCard key={experience.id} data={experience} />

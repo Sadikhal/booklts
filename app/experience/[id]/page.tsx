@@ -806,6 +806,7 @@ import { experiencesAPI } from '@/lib/api'
 import { Experience } from '@/types'
 import { format, addDays, isToday, isSameDay } from 'date-fns'
 import { ExperienceLoader } from '@/components/Loaders';
+import toast from 'react-hot-toast';
 
 const ExperienceDetails = () => {
   const params = useParams()
@@ -818,6 +819,7 @@ const ExperienceDetails = () => {
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
   const [quantity, setQuantity] = useState(1)
 
+
   useEffect(() => {
     const fetchExperience = async () => {
       try {
@@ -826,7 +828,6 @@ const ExperienceDetails = () => {
         setExperience(experienceData)
         
         if (experienceData && experienceData.slots && experienceData.slots.length > 0) {
-          // Find first available slot more reliably
           const firstAvailableSlot = experienceData.slots
             .filter(slot => !slot.soldOut && slot.available > 0)
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0]
@@ -835,29 +836,28 @@ const ExperienceDetails = () => {
             setSelectedDate(new Date(firstAvailableSlot.date))
             setSelectedTime(firstAvailableSlot.time)
           } else {
-            // If no available slots, still set the first date for display
             const firstSlot = experienceData.slots.sort((a, b) => 
               new Date(a.date).getTime() - new Date(b.date).getTime()
             )[0]
             if (firstSlot) {
               setSelectedDate(new Date(firstSlot.date))
-              // Don't set time if all slots are sold out
               setSelectedTime(null)
             }
           }
         }
       } catch (err) {
         setError('Failed to fetch experience details')
-        console.log('Error fetching experience:', err)
+        toast.error('Error fetching experience details');
       } finally {
         setLoading(false)
       }
     }
-
     if (id) {
       fetchExperience()
     }
   }, [id])
+
+
 
   const dates = Array.from({ length: 7 }, (_, i) => addDays(new Date(), i))
 
@@ -899,12 +899,12 @@ const ExperienceDetails = () => {
     setSelectedTime(time)
   }
 
-  // Reset quantity when date or time changes
   useEffect(() => {
     if (selectedDate && selectedTime) {
       setQuantity(1)
     }
   }, [selectedDate, selectedTime])
+
 
   if (loading) {
     return <ExperienceLoader/>
@@ -929,7 +929,6 @@ const ExperienceDetails = () => {
         <Image src="/leftArrow.svg" alt="arrow" className="object-contain" width={12} height={12} />
         <span className="font-medium text-sm text-black">Details</span>
       </Link>
-
       <div className="w-full flex flex-col lg:flex-row justify-between gap-9 py-6 px-3 md:px-0">
         <div className="flex flex-col w-full lg:w-[66%] gap-5">
           <div className="w-full h-[381px] rounded-xl overflow-hidden">
@@ -966,23 +965,21 @@ const ExperienceDetails = () => {
                     <Button
                       onClick={() => isAvailable && handleDateSelect(date)}
                       disabled={!isAvailable && !isFullyBooked}
-                      className={`px-3 py-2 text-sm rounded-sm h-8.5 w-[69px] relative ${
+                      className={`px-3 py-2 text-sm rounded-sm h-8.5 w-[69px]  ${
                         isSelected
                           ? 'bg-yellow hover:bg-yellow/80 text-heading'
                           : !isAvailable && !isFullyBooked
-                          ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          ? 'bg-[#CCCCCC] text-textColor cursor-not-allowed'
                           : isFullyBooked
-                          ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          ? 'bg-[#CCCCCC] text-textColor  cursor-not-allowed flex flex-row flex-nowrap items-center gap-2'
                           : 'bg-transparent text-textColor border-[#BDBDBD] border-[0.6px] hover:bg-gray-50'
                       }`}
                     >
                       {format(date, 'MMM dd')}
+                      {isFullyBooked && (
+                      <span className='text-[#6A6A6A] font-medium text-[10px]'>Sold out</span>
+                     )}
                     </Button>
-                    {isFullyBooked && (
-                      <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] px-1 py-0.5 rounded rotate-12">
-                        Sold Out
-                      </div>
-                    )}
                   </div>
                 )
               })}
@@ -1004,31 +1001,25 @@ const ExperienceDetails = () => {
                       <Button
                         onClick={() => !slot.soldOut && slot.available > 0 && handleTimeSelect(slot.time)}
                         disabled={slot.soldOut || slot.available === 0}
-                        className={`px-3 py-2 text-sm rounded-sm h-8.5 w-[117px] relative ${
+                        className={`px-3 py-2 text-sm rounded-sm h-[34px] min-w-[110px]  font-normal ${
                           selectedTime === slot.time && !slot.soldOut && slot.available > 0
                             ? 'bg-yellow hover:bg-yellow/80 text-heading'
                             : slot.soldOut || slot.available === 0
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                            ? 'bg-[#CCCCCC] text-textColor cursor-not-allowed flex flex-row gap-2 items-center'
                             : 'bg-transparent text-textColor border-[#BDBDBD] border-[0.6px] hover:bg-gray-50'
                         }`}
                       >
                         {slot.time}
-                        {!slot.soldOut && slot.available > 0 && (
+                        {!slot.soldOut && slot.available > 0 ? (
                           <span className="text-orange ml-1 text-[10px] font-medium">
                             {slot.available} left
                           </span>
-                        )}
+                        ) :  <span className="text-[#6A6A6A] font-medium text-[10px] pt-1">
+                            Sold Out
+                          </span>}
                       </Button>
-                      {(slot.soldOut || slot.available === 0) && (
-                        <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] px-1 py-0.5 rounded rotate-12">
-                          Sold Out
-                        </div>
-                      )}
                     </div>
                   ))}
-                {getAvailableSlotsForDate(selectedDate).length === 0 && (
-                  <p className="text-textColor text-sm">No available slots for this date</p>
-                )}
               </div>
               <p className="text-textColor text-xs font-normal mt-1">
                 All times are in IST (GMT +5:30)
