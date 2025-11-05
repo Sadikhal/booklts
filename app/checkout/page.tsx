@@ -106,20 +106,14 @@ const CheckoutPage = () => {
         },
         totalAmount: total
       }
-
       const response = await bookingsAPI.create(bookingData)
-      
-      if (response.status === 201) {
         router.push(`/result?bookingId=${response.data.id}`)
-      } else {
-        throw new Error(response.data.error || 'Booking failed')
+      } catch (err: any) {
+        console.error('Booking error:', err)
+        alert(err.response?.data?.error || 'Failed to create booking. Please try again.')
+      } finally {
+        setIsSubmitting(false)
       }
-    } catch (err: any) {
-      console.error('Booking error:', err)
-      alert(err.response?.data?.error || 'Failed to create booking. Please try again.')
-    } finally {
-      setIsSubmitting(false)
-    }
   }
 
   if (loading) {
@@ -143,7 +137,7 @@ const CheckoutPage = () => {
 
   return (
     <Container className="flex flex-col h-full pt-[111px]">
-      <Link href="/" className="flex flex-row gap-2 items-center px-3 md:px-0">
+      <Link href={`/checkout/experienceId}`} className="flex flex-row gap-2 items-center px-3 md:px-0">
         <Image src="/leftArrow.svg" alt="arrow" className="object-contain" width={12} height={12} />
         <span className="font-medium text-sm text-black">Checkout</span>
       </Link>
